@@ -1,0 +1,37 @@
+OPENING QIIME2
+
+# To see conda environments
+conda info --envs
+
+# my qiime2 envoironment is qiime2-amplicon-2024.5
+
+conda activate qiime2-amplicon-2024.5
+
+# IMPORTING FILES TO QIIME2
+
+qiime tools import \
+--type 'SampleData[PairedEndSequencesWithQuality]' \
+--input-path manifest.txt \
+--output-path paired-end-demux.qza \
+--input-format PairedEndFastqManifestPhred33V2
+
+# Exporting files.qza to see them and compare to my results
+
+qiime tools export --input-path examples/demux-paired-end.qza --output-path examples/demux-paired-end.txt
+
+qiime tools export --input-path paired-end-demux.qza --output-path paired-end-demux.txt
+
+# DENOISING PAIRED-END SEQUENCES WITH DADA: denoising filter out noisy sequences, correct error in marginal sequences, remove chimeric sequences, remove singletons, join denoised paired-end reads and dereplicate those sequences.
+
+qiime dada2 denoise-paired --i-demultiplexed-seqs paired-end-demux.qza --p-trunc-len-f 0 --p-trunc-len-r 0 --o-representative-sequences representative-sequences.qza --o-table table.qza --o-denoising-stats denoising-stats.qza
+
+# TAXONOMY CLASSIFICATION
+
+qiime feature-classifier classify-consensus-blast --i-query representative-sequences.qza --i-reference-taxonomy database --o-classification taxonomy.qza --o-search-resu
+lts hitsforeachquery.qza
+
+
+
+
+
+
